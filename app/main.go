@@ -27,9 +27,9 @@ func handleClient(conn net.Conn) {
 
 		if value.typ == "array" && len(value.array) > 0 {
 			cmd := value.array[0].bulk
-			if cmd == "ECHO" && len(value.array) >= 1 {
+			if cmd == "ECHO" && len(value.array) >= 2 {
 				arg := value.array[1].bulk
-				response := fmt.Sprintf("%d\r\n%s\r\n", len(arg), arg)
+				response := fmt.Sprintf("$%d\r\n%s\r\n", len(arg), arg)
 				conn.Write([]byte(response))
 			} else {
 				conn.Write([]byte("+PONG\r\n"))
