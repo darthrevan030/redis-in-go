@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"strconv"
 	"strings"
@@ -43,7 +44,7 @@ func (r *Resp) readLine() (line []byte, n int, err error) {
 	for {
 		b, err := r.reader.ReadByte()
 		if err != nil {
-			return nil, 0, error
+			return nil, 0, err
 		}
 
 		n += 1
@@ -87,6 +88,7 @@ func (r *Resp) readArray() (Value, error) {
 		}
 		v.array[i] = value
 	}
+	return v, nil
 }
 
 func (r *Resp) readBulk() (Value, error) {
@@ -98,7 +100,7 @@ func (r *Resp) readBulk() (Value, error) {
 		return v, err
 	}
 
-	bulk = make([]byte, length)
+	bulk := make([]byte, length)
 	r.reader.Read(bulk)
 	v.bulk = string(bulk)
 	r.readLine() // to shift the pointer to the end so it can read the next bulk string correctly
@@ -120,4 +122,4 @@ func (r *Resp) Read() (Value, error) {
 			fmt.Printf("invalid type: %v\n", string(_type))
 			return Value{}, err
 		}
-
+}
