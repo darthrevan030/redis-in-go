@@ -10,20 +10,44 @@ import (
 var _ = net.Listen
 var _ = os.Exit
 
-func main() {
-	// You can use print statements as follows for debugging, they'll be visible when running tests.
-	fmt.Println("Logs from your program will appear here!")
+func handleClient(conn net.Conn) {
+	
+	defer conn.Close()
 
-	// Uncomment the code below to pass the first stage
-	//
-	l, err := net.Listen("tcp", "0.0.0.0:6379")
+	buff := make([]byte, 1024)
+	numberOfBytesReceived, err := conn.Read(buff)
 	if err != nil {
-		fmt.Println("Failed to bind to port 6379")
+		fmt.Println("Error reading incoming data", err.Error())
+	}
+	fmt.Printf("received %d bytes", numberOfBytesReceived)
+	fmt.Printf("received following data: %s", string(buff[:numberOfBytesReceived]))
+
+	message := []byte("Hello, server")
+	numberOfBytesResponded, err := conn.Write(message)
+	fmt.Printf("sent %d bytes", numberOfBytesResponded)
+
+	conn.Close()
+}
+
+func main() {
+
+	// listens on port 6379 and exits with an error if the server fails to start
+	listener, err := net.Listen("tcp", "localhost:6379")
+	if err != nil {
+		fmt.Println("error starting server: ", err.Error())
 		os.Exit(1)
 	}
-	_, err = l.Accept()
-	if err != nil {
-		fmt.Println("Error accepting connection: ", err.Error())
-		os.Exit(1)
+
+	defer listener.Close()
+
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			fmt.Println("Error accepting connection", err.Error())
+			continue
+		}
+		
+		handleClient(conn)
 	}
+
 }
