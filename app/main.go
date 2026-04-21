@@ -44,7 +44,7 @@ func main() {
 			continue
 		}
 		
-		handleClient(conn)
+		go handleClient(conn)
 	}
 
 }
