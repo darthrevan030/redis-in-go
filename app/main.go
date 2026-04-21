@@ -22,9 +22,8 @@ func handleClient(conn net.Conn) {
 			fmt.Println("error reading data", err.Error())
 			break
 		}
-		msg, err := conn.Write([]byte("+PONG\r\n"))
+		conn.Write([]byte("+PONG\r\n"))
 	}
-	conn.Close()
 }
 
 func main() {
