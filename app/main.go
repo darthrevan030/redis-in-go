@@ -22,7 +22,7 @@ func handleClient(conn net.Conn) {
 	fmt.Printf("received %d bytes", numberOfBytesReceived)
 	fmt.Printf("received following data: %s", string(buff[:numberOfBytesReceived]))
 
-	message := []byte("Hello, server")
+	message := []byte(+PONG\r\n)
 	numberOfBytesResponded, err := conn.Write(message)
 	fmt.Printf("sent %d bytes", numberOfBytesResponded)
 
