@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"bufio"
-	"strconv"
-	"strings"
 )
 
 // Ensures gofmt doesn't remove the "net" and "os" imports in stage 1 (feel free to remove this!)
@@ -32,45 +29,33 @@ func handleClient(conn net.Conn) {
 func main() {
 
 	// listens on port 6379 and exits with an error if the server fails to start
-	// listener, err := net.Listen("tcp", "localhost:6379")
-	// if err != nil {
-	// 	fmt.Println("error starting server: ", err.Error())
-	// 	os.Exit(1)
-	// }
-
-	// defer listener.Close()
-
-	// for {
-	// 	conn, err := listener.Accept()
-	// 	if err != nil {
-	// 		fmt.Println("Error accepting connection", err.Error())
-	// 		continue
-	// 	}
-		
-	// 	go handleClient(conn)
-	// }
-
-	input := "$5\n\rREDIS\r\n"
-
-	reader := bufio.NewReader(strings.NewReader(string(input)))
-	
-	b, _ := reader.ReadByte()
-
-	if b != '$' {
-		fmt.Println("invalid type, expecting bulk strings only")
+	listener, err := net.Listen("tcp", "localhost:6379")
+	if err != nil {
+		fmt.Println("error starting server: ", err.Error())
 		os.Exit(1)
 	}
 
-	size, _ := reader.ReadByte()
+	defer listener.Close()
+	
+	conn, err := listener.Accept()
+	if err != nil {
+		fmt.Println("error accepting connection:", err.Error())
+		
+	}
 
-	strSize, _ := strconv.ParseInt(string(size), 10, 64)
+	for {
+		resp := NewResp(conn)
+		value, err := resp.Read()
+		if err != nil {
+			fmt.Print("error in resp:", err.Error())
+			return
+		}
 
-	// consume \r and \n
-	reader.ReadByte()
-	reader.ReadByte()
+		fmt.Println(value)
 
-	outputBuff := make([]byte, strSize)
+		conn.Write([]byte("+PONG\r\n"))
+	}
 
-	reader.Read(outputBuff)
+
 
 }
