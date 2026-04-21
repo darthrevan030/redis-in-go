@@ -15,17 +15,19 @@ func handleClient(conn net.Conn) {
 	defer conn.Close()
 
 	buff := make([]byte, 1024)
-	numberOfBytesReceived, err := conn.Read(buff)
-	if err != nil {
-		fmt.Println("Error reading incoming data", err.Error())
+
+	for {
+		_, err := conn.Read(buff)
+		if err != nil {
+			fmt.Println("error reading data", err.Error())
+		}
+
 	}
-	fmt.Printf("received %d bytes", numberOfBytesReceived)
-	fmt.Printf("received following data: %s", string(buff[:numberOfBytesReceived]))
-
-	message := []byte("+PONG\r\n")
-	numberOfBytesResponded, err := conn.Write(message)
-	fmt.Printf("sent %d bytes", numberOfBytesResponded)
-
+	_, err := conn.Write([]byte("+PONG\r\n"))
+	if err != nil {
+		fmt.Println("error writing data", err.Error())
+	}
+	
 	conn.Close()
 }
 
