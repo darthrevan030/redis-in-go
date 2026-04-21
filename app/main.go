@@ -14,15 +14,29 @@ func handleClient(conn net.Conn) {
 	
 	defer conn.Close()
 
-	buff := make([]byte, 1024)
+	resp := NewResp(conn)
 
 	for {
-		_, err := conn.Read(buff)
+		value, err := resp.Read()
 		if err != nil {
-			fmt.Println("error reading data", err.Error())
+			fmt.Println("error in resp", err.Error())
 			break
 		}
-		conn.Write([]byte("+PONG\r\n"))
+
+		fmt.Println(value)
+
+		if value.typ == "array" && len(value.array) > 0 {
+			cmd := value.array[0].bulk
+			if cmd == "ECHO" && len(value.array) >= 1 {
+				arg := value.array[1].bulk
+				response := fmt.Sprintf("%d\r\n%s\r\n", len(arg), arg)
+				conn.Write([]byte(response))
+			} else {
+				conn.Write([]byte("+PONG\r\n"))
+			}
+		} else {
+			conn.Write([]byte("+PONG\r\n"))
+		}
 	}
 }
 
@@ -36,24 +50,14 @@ func main() {
 	}
 
 	defer listener.Close()
-	
-	conn, err := listener.Accept()
-	if err != nil {
-		fmt.Println("error accepting connection:", err.Error())
-		
-	}
 
 	for {
-		resp := NewResp(conn)
-		value, err := resp.Read()
+		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Print("error in resp:", err.Error())
-			return
+			fmt.Println("error accepting connection:", err.Error())
+			continue
 		}
-
-		fmt.Println(value)
-
-		conn.Write([]byte("+PONG\r\n"))
+	go handleClient(conn)
 	}
 
 
