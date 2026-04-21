@@ -39,6 +39,27 @@ func NewResp(rd io.Reader) *Resp {
 	return &Resp{reader: bufio.NewReader(rd)}
 }
 
+func (r *Resp) Read() (Value, error) {
+	_type, err := r.reader.ReadByte()
+	if err != nil {
+		return Value{}, err
+	}
+
+	switch _type {
+		case ARRAY:
+			return r.readArray()
+		case BULK:
+			return r.readBulk()
+		case STRING:
+			return r.readSimpleString()
+		case INTEGER:
+			return r.readIntegerValue()
+		default:
+			fmt.Printf("invalid type: %v\n", string(_type))
+			return Value{}, fmt.Errorf("unknown type: %v", string(_type))
+		}
+}
+
 func (r *Resp) readLine() (line []byte, n int, err error) {
 	for {
 		b, err := r.reader.ReadByte()
@@ -61,7 +82,7 @@ func (r *Resp) readInteger() (x int, n int, err error) {
 	if err != nil {
 		return 0, n, err
 	}
-	i64, err := strconv.ParseInt(string(line), 10, 40)
+	i64, err := strconv.ParseInt(string(line), 10, 64)
 	if err != nil {
 		return 0, n, err
 	}
@@ -100,25 +121,45 @@ func (r *Resp) readBulk() (Value, error) {
 	}
 
 	bulk := make([]byte, length)
-	r.reader.Read(bulk)
+	
+	_, err = io.ReadFull(r.reader, bulk)
+	if err != nil {
+		return v, err
+	}
+
 	v.bulk = string(bulk)
 	r.readLine() // to shift the pointer to the end so it can read the next bulk string correctly
 	return v, nil
 }
 
-func (r *Resp) Read() (Value, error) {
-	_type, err := r.reader.ReadByte()
+func (r *Resp) readSimpleString() (Value, error) {
+	line, _, err := r.readLine() 
 	if err != nil {
 		return Value{}, err
 	}
 
-	switch _type {
-		case ARRAY:
-			return r.readArray()
-		case BULK:
-			return r.readBulk()
-		default:
-			fmt.Printf("invalid type: %v\n", string(_type))
-			return Value{}, err
-		}
+	v := Value{}
+	v.typ = "string"
+
+	v.str = string(line)
+	
+	return v, nil
+}
+
+func (r *Resp) readIntegerValue() (Value, error) {
+	i, _, err := r.readInteger()
+	if err != nil {
+		return Value{}, err
+	}
+	
+	v := Value{}
+	v.typ = "integer"
+
+	v.num = i
+
+	return v, nil
+}
+
+func (r *Resp) readError() (Value, error) {
+
 }
