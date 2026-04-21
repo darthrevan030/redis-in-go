@@ -20,14 +20,10 @@ func handleClient(conn net.Conn) {
 		_, err := conn.Read(buff)
 		if err != nil {
 			fmt.Println("error reading data", err.Error())
+			break
 		}
-
+		msg, err := conn.Write([]byte("+PONG\r\n"))
 	}
-	_, err := conn.Write([]byte("+PONG\r\n"))
-	if err != nil {
-		fmt.Println("error writing data", err.Error())
-	}
-	
 	conn.Close()
 }
 
