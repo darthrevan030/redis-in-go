@@ -54,6 +54,8 @@ func (r *Resp) Read() (Value, error) {
 			return r.readSimpleString()
 		case INTEGER:
 			return r.readIntegerValue()
+		case ERROR:
+			return r.readError()
 		default:
 			fmt.Printf("invalid type: %v\n", string(_type))
 			return Value{}, fmt.Errorf("unknown type: %v", string(_type))
@@ -161,5 +163,15 @@ func (r *Resp) readIntegerValue() (Value, error) {
 }
 
 func (r *Resp) readError() (Value, error) {
+	line, _, err := r.readLine() 
+	if err != nil {
+		return Value{}, err
+	}
 
+	v := Value{}
+	v.typ = "error"
+
+	v.str = string(line)
+	
+	return v, nil
 }
