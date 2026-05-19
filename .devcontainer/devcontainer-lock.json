@@ -1,0 +1,27 @@
+{
+  "features": {
+    "ghcr.io/devcontainers-extra/features/apt-get-packages:1": {
+      "version": "1.0.8",
+      "resolved": "ghcr.io/devcontainers-extra/features/apt-get-packages@sha256:776fa11c30c50fa91d5e1bf050444b0f130827457109c349db92e8e126b750ec",
+      "integrity": "sha256:776fa11c30c50fa91d5e1bf050444b0f130827457109c349db92e8e126b750ec"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:3.0.0": {
+      "version": "3.0.0",
+      "resolved": "ghcr.io/devcontainers/features/docker-in-docker@sha256:256ffdbc156ffddd4c54b917176b5ddba379335706da7234e338bdd97bb4d771",
+      "integrity": "sha256:256ffdbc156ffddd4c54b917176b5ddba379335706da7234e338bdd97bb4d771"
+    },
+    "ghcr.io/stu-bell/devcontainer-features/claude-code:0": {
+      "version": "0.1.0",
+      "resolved": "ghcr.io/stu-bell/devcontainer-features/claude-code@sha256:f87b4da3f8648db9111cb25c6bd3817d096018d81f3fb596340f7ffdba14409a",
+      "integrity": "sha256:f87b4da3f8648db9111cb25c6bd3817d096018d81f3fb596340f7ffdba14409a"
+    },
+    "ghcr.io/w3cj/devcontainer-features/firewall:latest": {
+      "version": "0.0.2",
+      "resolved": "ghcr.io/w3cj/devcontainer-features/firewall@sha256:f8ae63faf64094305ef247befc0a9c66eecd7a01768df0cc826c7d4a81a92bfc",
+      "integrity": "sha256:f8ae63faf64094305ef247befc0a9c66eecd7a01768df0cc826c7d4a81a92bfc",
+      "dependsOn": [
+        "ghcr.io/devcontainers-extra/features/apt-get-packages:1"
+      ]
+    }
+  }
+}

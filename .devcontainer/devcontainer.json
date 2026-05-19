@@ -1,6 +1,19 @@
 {
   "name": "Go",
   "image": "mcr.microsoft.com/devcontainers/go:1.26",
+  "features": {
+    "ghcr.io/stu-bell/devcontainer-features/claude-code:0": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:3.0.0": {
+      "moby": false
+    },
+    "ghcr.io/w3cj/devcontainer-features/firewall:latest": {
+      "githubIps": true,
+      "claudeCode": true
+        }
+  },
+  "mounts": [
+    "source=${localEnv:USERPROFILE}/.claude/,target=/home/vscode/.claude,type=bind,consistency=cached"
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -12,6 +25,7 @@
         "mtxr.sqltools-driver-pg",
         "streetsidesoftware.code-spell-checker",
         "rangav.vscode-thunder-client",
+        "esbenp.prettier-vscode",
         "anthropic.claude-code"
       ],
       "settings": {
@@ -30,5 +44,5 @@
     }
   },
   "forwardPorts": [8080, 5432],
-  "postCreateCommand": "go version && go mod tidy"
+  "postCreateCommand": "go version && go mod tidy && sudo chown -R vscode:vscode ~/.claude && chmod 700 ~/.claude && chmod 600 ~/.claude/.credentials.json"
 }
