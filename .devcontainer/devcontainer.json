@@ -1,0 +1,34 @@
+{
+  "name": "Go",
+  "image": "mcr.microsoft.com/devcontainers/go:1.26",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "usernamehw.errorlens",
+        "gruntfuggly.todo-tree",
+        "mhutchie.git-graph",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+        "streetsidesoftware.code-spell-checker",
+        "rangav.vscode-thunder-client",
+        "anthropic.claude-code"
+      ],
+      "settings": {
+        "editor.fontSize": 16,
+        "editor.formatOnSave": true,
+        "editor.wordWrap": "off",
+        "editor.inlayHints.enabled": "off",
+        "editor.guides.indentation": false,
+        "editor.guides.bracketPairs": false,
+        "sqltools.useNodeRuntime": false,
+        "[go]": {
+          "editor.defaultFormatter": "golang.go",
+          "editor.tabSize": 4
+        }
+      }
+    }
+  },
+  "forwardPorts": [8080, 5432],
+  "postCreateCommand": "go version && go mod tidy"
+}
